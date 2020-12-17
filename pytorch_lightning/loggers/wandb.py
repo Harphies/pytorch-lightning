@@ -27,11 +27,12 @@ from pytorch_lightning.utilities import rank_zero_only, _module_available
 
 _WANDB_AVAILABLE = _module_available("wandb")
 
-if _WANDB_AVAILABLE:
+try:
     import wandb
-    from wandb.wandb_run import Run as WBRun
-else:
+    from wandb.wandb_run import Run
+except ImportError:
     wandb = None  # needed for test mocks, these tests shall be updated
+    Run = None
 
 
 class WandbLogger(LightningLoggerBase):
@@ -118,7 +119,7 @@ class WandbLogger(LightningLoggerBase):
 
     @property
     @rank_zero_experiment
-    def experiment(self) -> "WBRun":
+    def experiment(self) -> "Run":
         r"""
 
         Actual wandb object. To use wandb features in your
